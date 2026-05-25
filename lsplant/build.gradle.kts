@@ -168,3 +168,57 @@ publish {
         }
     }
 }
+
+// ========== 新增：发布到本地 maven-repo 目录（通过 raw.githubusercontent.com 分发） ==========
+val ghVersion = (findProperty("gh.version") as? String) ?: ver
+
+publishing {
+    repositories {
+        maven {
+            name = "LocalRepo"
+            url = uri("${rootProject.projectDir}/maven-repo")
+        }
+    }
+    publications {
+        register<MavenPublication>("lsplantHotfix") {
+            groupId = "com.buildbasesdk"
+            artifactId = "sohotfix"
+            version = ghVersion
+            afterEvaluate {
+                from(components.getByName("release"))
+                artifact(symbolsReleaseTask)
+            }
+            pom {
+                name = "so-hotfix"
+                description = "A hook framework for Android Runtime (ART)"
+                url = "https://github.com/buildbasesdk/so-hotfix"
+                licenses {
+                    license {
+                        name = "GNU Lesser General Public License v3.0"
+                        url = "https://github.com/LSPosed/LSPlant/blob/master/LICENSE"
+                    }
+                }
+            }
+        }
+        register<MavenPublication>("lsplantStandaloneHotfix") {
+            groupId = "com.buildbasesdk"
+            artifactId = "sohotfix-standalone"
+            version = ghVersion
+            afterEvaluate {
+                from(components.getByName("standalone"))
+                artifact(symbolsStandaloneTask)
+            }
+            pom {
+                name = "so-hotfix Standalone"
+                description = "A hook framework for Android Runtime (ART) - Standalone"
+                url = "https://github.com/buildbasesdk/so-hotfix"
+                licenses {
+                    license {
+                        name = "GNU Lesser General Public License v3.0"
+                        url = "https://github.com/LSPosed/LSPlant/blob/master/LICENSE"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -222,3 +222,22 @@ publishing {
         }
     }
 }
+
+// ===== 跳过 Javadoc（无 Java 代码） =====
+tasks.matching { it.name.contains("javaDoc", ignoreCase = true) }.configureEach {
+    enabled = false
+}
+
+// ===== 快捷发布 Task（一键发布 sohotfix AAR） =====
+tasks.register("publishSohotfixAar") {
+    group = "publishing"
+    description = "发布 sohotfix AAR 到 maven-repo 目录"
+
+    dependsOn("publishLsplantHotfixPublicationToLocalRepoRepository")
+
+    doLast {
+        println("✅ 发布完成: com.buildbasesdk:sohotfix:${ghVersion}")
+        println("   输出目录: maven-repo/com/buildbasesdk/sohotfix/${ghVersion}/")
+        println("   ⏭  下一步: git add maven-repo/ && git commit && git push hotfix master:so-hotfix")
+    }
+}
